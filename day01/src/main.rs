@@ -1,5 +1,3 @@
-use std::collections::BinaryHeap;
-
 const INPUT: &str = include_str!("../input.txt");
 fn main() {
     println!("{}", max_calories(INPUT));
