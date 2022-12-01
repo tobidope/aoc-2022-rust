@@ -1,3 +1,8 @@
+const INPUT: &str = include_str!("../input.txt");
+
 fn main() {
-    println!("Hello, world!");
+    println!("{}", INPUT);
 }
+
+#[cfg(test)]
+mod tests {}
