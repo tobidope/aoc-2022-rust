@@ -32,30 +32,15 @@ impl GameResult {
 
 impl Move {
     fn wins_against(&self, other: &Move) -> GameResult {
-        if self == other {
-            GameResult::Draw
-        } else {
-            match self {
-                Move::Rock => {
-                    if *other == Move::Paper {
-                        GameResult::Loss
-                    } else {
-                        GameResult::Win
-                    }
-                }
-                Move::Paper => {
-                    if *other == Move::Scissor {
-                        GameResult::Loss
-                    } else {
-                        GameResult::Win
-                    }
-                }
-                Move::Scissor => {
-                    if *other == Move::Rock {
-                        GameResult::Loss
-                    } else {
-                        GameResult::Win
-                    }
+        match (self, other) {
+            (Move::Rock, Move::Scissor)
+            | (Move::Paper, Move::Rock)
+            | (Move::Scissor, Move::Paper) => GameResult::Win,
+            _ => {
+                if self == other {
+                    GameResult::Draw
+                } else {
+                    GameResult::Loss
                 }
             }
         }
