@@ -13,22 +13,6 @@ enum Move {
     Paper,
     Scissor,
 }
-#[derive(Debug, PartialEq)]
-enum GameResult {
-    Draw,
-    Win,
-    Loss,
-}
-
-impl GameResult {
-    fn score(&self) -> usize {
-        match self {
-            GameResult::Draw => 3,
-            GameResult::Win => 6,
-            GameResult::Loss => 0,
-        }
-    }
-}
 
 impl Move {
     fn wins_against(&self, other: &Move) -> GameResult {
@@ -75,7 +59,22 @@ impl From<u8> for Move {
         }
     }
 }
+#[derive(Debug, PartialEq)]
+enum GameResult {
+    Draw,
+    Win,
+    Loss,
+}
 
+impl GameResult {
+    fn score(&self) -> usize {
+        match self {
+            GameResult::Draw => 3,
+            GameResult::Win => 6,
+            GameResult::Loss => 0,
+        }
+    }
+}
 impl From<u8> for GameResult {
     fn from(c: u8) -> Self {
         match c {
