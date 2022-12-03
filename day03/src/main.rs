@@ -8,6 +8,18 @@ fn main() {
     println!("{}", result);
 }
 
+fn part1(input: &str) -> usize {
+    let mid = input.len() / 2;
+    let rucksack1 = &input[..mid];
+    let rucksack2 = &input[mid..];
+
+    rucksack1
+        .bytes()
+        .find(|&c| rucksack2.contains(c as char))
+        .map(|c| priority(&c))
+        .unwrap() as usize
+}
+
 fn part2(input: &str) -> usize {
     let mut result = 0;
     let mut set: HashSet<u8> = HashSet::new();
@@ -26,18 +38,6 @@ fn part2(input: &str) -> usize {
     let char = &set.drain().next().unwrap();
     result += priority(char);
     result
-}
-
-fn part1(input: &str) -> usize {
-    let mid = input.len() / 2;
-    let rucksack1 = &input[..mid];
-    let rucksack2 = &input[mid..];
-
-    rucksack1
-        .bytes()
-        .find(|&c| rucksack2.contains(c as char))
-        .map(|c| priority(&c))
-        .unwrap() as usize
 }
 
 fn priority(c: &u8) -> usize {
