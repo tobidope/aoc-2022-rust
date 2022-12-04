@@ -1,4 +1,4 @@
-# ⭐⭐⭐🎄🎄🎄 Advent of Code 2022 🎄🎄🎄⭐⭐⭐
+# ⭐⭐🎄🎄 Advent of Code 2022 🎄🎄⭐⭐
 
 [![Build](https://github.com/tobidope/aoc-2022-rust/actions/workflows/ci.yml/badge.svg)](https://github.com/tobidope/aoc-2022-rust/actions/workflows/ci.yml)
 ![](https://img.shields.io/badge/day%20📅-4-blue)
