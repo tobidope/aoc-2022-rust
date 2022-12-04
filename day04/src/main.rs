@@ -1,4 +1,8 @@
-use std::{ops::RangeInclusive, str::FromStr};
+use std::{
+    cmp::{max, min},
+    ops::RangeInclusive,
+    str::FromStr,
+};
 
 const INPUT: &str = include_str!("../input.txt");
 
@@ -6,10 +10,16 @@ fn main() {
     let input: Vec<Assignment> = INPUT.lines().map(|l| l.parse().unwrap()).collect();
     let result = part1(&input);
     println!("{result}");
+    let result = part2(&input);
+    println!("{result}");
 }
 
 fn part1(input: &[Assignment]) -> usize {
     input.iter().filter(|a| a.fully_contains()).count()
+}
+
+fn part2(input: &[Assignment]) -> usize {
+    input.iter().filter(|a| a.is_overlapping()).count()
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -23,17 +33,24 @@ impl Assignment {
         (self.first.contains(self.second.start()) && self.first.contains(self.second.end()))
             || (self.second.contains(self.first.start()) && self.second.contains(self.first.end()))
     }
+
+    fn is_overlapping(&self) -> bool {
+        let left = max(self.first.start(), self.second.start());
+        let right = min(self.first.end(), self.second.end());
+        left <= right
+    }
 }
 
 impl FromStr for Assignment {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let parts = s.split(',');
-        let numbers = parts
+        let numbers = s
+            .split(',')
             .flat_map(|p| p.split('-'))
             .map(|s| s.parse::<usize>().unwrap())
             .collect::<Vec<_>>();
+
         if numbers.len() != 4 {
             Err(format!("Couldn't parse {}", s))
         } else {
@@ -74,5 +91,13 @@ mod tests {
             },
             a
         );
+    }
+
+    #[test]
+    fn test_is_overlapping() {
+        let a: Assignment = "5-7,7-9".parse().unwrap();
+        assert!(a.is_overlapping());
+        let a: Assignment = "2-4,6-8".parse().unwrap();
+        assert!(!a.is_overlapping());
     }
 }
