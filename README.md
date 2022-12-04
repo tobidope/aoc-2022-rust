@@ -6,3 +6,5 @@
 ![Completed days](https://img.shields.io/badge/days%20completed-4-red)
 
 This year I try 🦀[Rust](https://www.rust-lang.org/)🦀 to help the elves!
+
+<!--- advent_readme_stars table --->
