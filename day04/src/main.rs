@@ -46,8 +46,7 @@ impl FromStr for Assignment {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let numbers = s
-            .split(',')
-            .flat_map(|p| p.split('-'))
+            .split(&[',', '-'])
             .map(|s| s.parse::<usize>().unwrap())
             .collect::<Vec<_>>();
 
