@@ -44,16 +44,20 @@ impl FromStr for Ship {
 
 impl Ship {
     fn arrange(&mut self, instruction: &Instruction) {
-        for _ in 0..instruction.count {
-            let krate = self.stacks[instruction.from - 1].pop().unwrap();
-            self.stacks[instruction.to - 1].push(krate);
-        }
+        self.arrange_intern(instruction, true);
     }
 
     fn arrange_multiple(&mut self, instruction: &Instruction) {
+        self.arrange_intern(instruction, false);
+    }
+
+    fn arrange_intern(&mut self, instruction: &Instruction, reversed: bool) {
         let from_stack = &mut self.stacks[instruction.from - 1];
         let to_remove = from_stack.len() - instruction.count..;
-        let removed = from_stack.drain(to_remove).collect::<Vec<u8>>();
+        let mut removed = from_stack.drain(to_remove).collect::<Vec<u8>>();
+        if reversed {
+            removed.reverse();
+        }
         self.stacks[instruction.to - 1].extend(removed);
     }
 
