@@ -52,7 +52,7 @@ impl Ship {
 
     fn arrange_multiple(&mut self, instruction: &Instruction) {
         let from_stack = &mut self.stacks[instruction.from - 1];
-        let to_remove = (from_stack.len() - instruction.count..);
+        let to_remove = from_stack.len() - instruction.count..;
         let removed = from_stack.drain(to_remove).collect::<Vec<u8>>();
         self.stacks[instruction.to - 1].extend(removed);
     }
