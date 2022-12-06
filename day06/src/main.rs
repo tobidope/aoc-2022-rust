@@ -18,16 +18,10 @@ fn find_marker(input: &str, window_size: usize) -> usize {
     input
         .as_bytes()
         .windows(window_size)
-        .enumerate()
-        .find_map(|(i, w)| {
-            let set: HashSet<u8> = w.iter().copied().collect();
-            if set.len() == window_size {
-                Some(i + window_size)
-            } else {
-                None
-            }
-        })
+        .map(|x| HashSet::from_iter(x.iter().copied()))
+        .position(|set: HashSet<u8>| set.len() == window_size)
         .unwrap()
+        + window_size
 }
 
 #[cfg(test)]
