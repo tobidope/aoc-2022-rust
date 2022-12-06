@@ -1,7 +1,7 @@
 # ⭐⭐🎄🎄 Advent of Code 2022 🎄🎄⭐⭐
 
 [![Build](https://github.com/tobidope/aoc-2022-rust/actions/workflows/ci.yml/badge.svg)](https://github.com/tobidope/aoc-2022-rust/actions/workflows/ci.yml)
-![Current day](https://img.shields.io/badge/day%20📅-5-blue)
+![Current day](https://img.shields.io/badge/day%20📅-6-blue)
 ![Number of stars](https://img.shields.io/badge/stars%20⭐-10-yellow)
 ![Completed days](https://img.shields.io/badge/days%20completed-5-red)
 
