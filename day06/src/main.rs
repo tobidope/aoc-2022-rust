@@ -14,15 +14,15 @@ fn part2(input: &str) -> usize {
     find_marker(input, 14)
 }
 
-fn find_marker(input: &str, distinct: usize) -> usize {
+fn find_marker(input: &str, window_size: usize) -> usize {
     input
         .as_bytes()
-        .windows(distinct)
+        .windows(window_size)
         .enumerate()
         .find_map(|(i, w)| {
             let set: HashSet<u8> = w.iter().copied().collect();
-            if set.len() == distinct {
-                Some(i + distinct)
+            if set.len() == window_size {
+                Some(i + window_size)
             } else {
                 None
             }
