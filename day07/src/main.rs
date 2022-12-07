@@ -31,8 +31,8 @@ fn parse(input: &str, arena: &mut Arena<Entry>) -> (NodeId, Vec<NodeId>) {
         name: "/".to_string(),
     });
     let mut directories: Vec<NodeId> = vec![];
-
     let mut current_node = root;
+
     for line in input.lines() {
         let args: Vec<&str> = line.split_ascii_whitespace().collect();
         match args[..] {
@@ -66,7 +66,7 @@ fn parse(input: &str, arena: &mut Arena<Entry>) -> (NodeId, Vec<NodeId>) {
     (root, directories)
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 enum Entry {
     #[allow(dead_code)]
     File {
@@ -88,5 +88,59 @@ fn size(entry: &NodeId, arena: &Arena<Entry>) -> usize {
                 Entry::Directory { name: _ } => size(&child, arena),
             })
             .sum(),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse() {
+        let input = r#"$ cd /
+$ ls
+dir a
+14848514 b.txt
+8504156 c.dat
+dir d
+$ cd a
+$ ls
+dir e
+29116 f
+2557 g
+62596 h.lst
+$ cd e
+$ ls
+584 i
+$ cd ..
+$ cd ..
+$ cd d
+$ ls
+4060174 j
+8033020 d.log
+5626152 d.ext
+7214296 k"#;
+        let arena = &mut Arena::new();
+        let (root, directories) = parse(input, arena);
+        assert_eq!(3, directories.len());
+        assert_eq!(4, root.children(arena).count());
+        let children = vec![
+            Entry::Directory { name: "a".into() },
+            Entry::File {
+                name: "b.txt".into(),
+                size: 14848514,
+            },
+            Entry::File {
+                name: "c.dat".into(),
+                size: 8504156,
+            },
+            Entry::Directory { name: "d".into() },
+        ];
+        assert_eq!(
+            children,
+            root.children(arena)
+                .map(|c| arena[c].get().clone())
+                .collect::<Vec<Entry>>()
+        )
     }
 }
