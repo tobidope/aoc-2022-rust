@@ -63,8 +63,14 @@ fn main() {
 
 #[derive(Debug)]
 enum Entry {
-    File { name: String, size: usize },
-    Directory { name: String },
+    #[allow(dead_code)]
+    File {
+        name: String,
+        size: usize,
+    },
+    Directory {
+        name: String,
+    },
 }
 
 fn size(entry: &NodeId, arena: &Arena<Entry>) -> usize {
