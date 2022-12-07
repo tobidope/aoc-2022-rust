@@ -2,8 +2,8 @@
 
 [![Build](https://github.com/tobidope/aoc-2022-rust/actions/workflows/ci.yml/badge.svg)](https://github.com/tobidope/aoc-2022-rust/actions/workflows/ci.yml)
 ![Current day](https://img.shields.io/badge/day%20📅-7-blue)
-![Number of stars](https://img.shields.io/badge/stars%20⭐-12-yellow)
-![Completed days](https://img.shields.io/badge/days%20completed-6-red)
+![Number of stars](https://img.shields.io/badge/stars%20⭐-14-yellow)
+![Completed days](https://img.shields.io/badge/days%20completed-7-red)
 
 This year I try 🦀[Rust](https://www.rust-lang.org/)🦀 to help the elves!
 
@@ -18,4 +18,5 @@ This year I try 🦀[Rust](https://www.rust-lang.org/)🦀 to help the elves!
 | [Day 4](https://adventofcode.com/2022/day/4) | ⭐ | ⭐ |
 | [Day 5](https://adventofcode.com/2022/day/5) | ⭐ | ⭐ |
 | [Day 6](https://adventofcode.com/2022/day/6) | ⭐ | ⭐ |
+| [Day 7](https://adventofcode.com/2022/day/7) | ⭐ | ⭐ |
 <!--- advent_readme_stars table --->
