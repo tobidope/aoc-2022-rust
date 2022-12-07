@@ -4,13 +4,36 @@ const INPUT: &str = include_str!("../input.txt");
 
 fn main() {
     let arena = &mut Arena::new();
+    let (root, directories) = parse(INPUT, arena);
+    let directory_sizes: Vec<usize> = directories.iter().map(|d| size(d, arena)).collect();
+    let part1_size: usize = directory_sizes
+        .iter()
+        .filter(|&size| *size <= 100_000)
+        .sum();
+    println!("{part1_size}");
+
+    let space_available = 70_000_000;
+    let space_needed = 30_000_000;
+    let used_space = size(&root, arena);
+    let free_space = space_available - used_space;
+    let free_up = space_needed - free_space;
+
+    let part2_size = directory_sizes
+        .iter()
+        .filter(|&&size| size >= free_up)
+        .min()
+        .unwrap();
+    println!("{part2_size}");
+}
+
+fn parse(input: &str, arena: &mut Arena<Entry>) -> (NodeId, Vec<NodeId>) {
     let root = arena.new_node(Entry::Directory {
         name: "/".to_string(),
     });
     let mut directories: Vec<NodeId> = vec![];
 
     let mut current_node = root;
-    for line in INPUT.lines() {
+    for line in input.lines() {
         let args: Vec<&str> = line.split_ascii_whitespace().collect();
         match args[..] {
             ["$", "cd", "/"] => current_node = root,
@@ -18,7 +41,7 @@ fn main() {
             ["$", "cd", directory] => {
                 current_node = current_node
                     .children(arena)
-                    .find(|child| matches!(arena[*child].get(), Entry::Directory { name } if name == directory))
+                    .find(|&child| matches!(arena[child].get(), Entry::Directory { name } if name == directory))
                     .unwrap();
             }
             ["$", "ls"] => (),
@@ -40,25 +63,7 @@ fn main() {
             _ => panic!("Can't parse {}", line),
         }
     }
-    let directory_sizes: Vec<usize> = directories.iter().map(|d| size(d, arena)).collect();
-    let part1_size: usize = directory_sizes
-        .iter()
-        .filter(|&size| *size <= 100_000)
-        .sum();
-    println!("{part1_size}");
-
-    let space_available = 70_000_000;
-    let space_needed = 30_000_000;
-    let used_space = size(&root, arena);
-    let free_space = space_available - used_space;
-    let free_up = space_needed - free_space;
-
-    let part2_size = directory_sizes
-        .iter()
-        .filter(|&&size| size >= free_up)
-        .min()
-        .unwrap();
-    println!("{part2_size}");
+    (root, directories)
 }
 
 #[derive(Debug)]
