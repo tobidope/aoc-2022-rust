@@ -12,10 +12,5 @@ apt-get install -y \
   openssl
 
 ## Install rustup and common components
-curl https://sh.rustup.rs -sSf | sh -s -- -y 
-rustup install stable
-rustup component add rustfmt
-rustup component add clippy 
-
-cargo install cargo-expand
-cargo install cargo-edit
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y 
+source "$HOME/.cargo/env"
