@@ -6,11 +6,14 @@ apt-get install -y \
   gnupg2 \
   jq \
   sudo \
-  zsh \
   vim \
   build-essential \
-  openssl
+  openssl \
+  libssl-dev
 
 ## Install rustup and common components
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y 
 source "$HOME/.cargo/env"
+cargo install cargo-expand
+cargo install cargo-edit
+cargo install cargo-cache
