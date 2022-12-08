@@ -3,11 +3,11 @@
     "extensions": [
         "cschleiden.vscode-github-actions",
         "ms-vsliveshare.vsliveshare",
-        "matklad.rust-analyzer",
         "serayuzgur.crates",
         "vadimcn.vscode-lldb",
         "tamasfe.even-better-toml",
-        "MS-CEINTL.vscode-language-pack-de"
+        "MS-CEINTL.vscode-language-pack-de",
+        "rust-lang.rust-analyzer"
     ],
     "dockerFile": "Dockerfile",
     "settings": {
