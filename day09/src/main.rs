@@ -1,108 +1,43 @@
-use std::{
-    collections::HashSet,
-    ops::{Add, Sub},
-    str::FromStr,
-};
+use std::{collections::HashSet, iter::repeat};
 
-const INPUT: &str = include_str!("../example.txt");
+const INPUT: &str = include_str!("../input.txt");
 
 fn main() {
-    let mut head = Position::default();
-    let mut tail = Position::default();
+    println!("{}", part1(INPUT));
+}
+
+fn part1(input: &str) -> usize {
+    let mut head = [0, 0];
+    let mut tail = [0, 0];
     let mut visited = HashSet::new();
     visited.insert(tail);
 
-    let steps: Vec<Direction> = INPUT.lines().map(|l| l.parse().unwrap()).collect();
-    for step in steps {
-        for p in head.step_positions(&step) {
-            head = head + p;
-            match head {
-                Position { x: 0, y: 0 } => (),
-                Position { x, y: 0 } if x.abs() > 1 => {
-                    tail.x += x;
-                }
-                Position { x: 0, y } if y.abs() > 1 => {
-                    tail.y += y;
-                }
-                Position { x, y } if x.abs() == 2 || y.abs() == 2 => {
-                    tail.x += x.signum();
-                    tail.y += y.signum();
-                }
-                _ => (),
+    for line in input.lines() {
+        let (dir, steps) = line.split_once(' ').unwrap();
+        let steps = steps.parse::<usize>().unwrap();
+        let head_steps = match (dir, steps) {
+            ("R", n) => repeat(1).take(n).zip(repeat(0)).collect::<Vec<_>>(),
+            ("L", n) => repeat(-1).take(n).zip(repeat(0)).collect::<Vec<_>>(),
+            ("U", n) => repeat(0).zip(repeat(1).take(n)).collect::<Vec<_>>(),
+            ("D", n) => repeat(0).zip(repeat(-1).take(n)).collect::<Vec<_>>(),
+            _ => panic!("Unknown step {}", line),
+        };
+
+        for (x, y) in head_steps {
+            head[0] += x;
+            head[1] += y;
+
+            let (diff_x, diff_y): (i32, i32) = (head[0] - tail[0], head[1] - tail[1]);
+
+            if diff_x.abs() > 1 || diff_y.abs() > 1 {
+                tail[0] += diff_x.signum();
+                tail[1] += diff_y.signum();
+                visited.insert(tail);
             }
         }
-        visited.insert(tail);
     }
-    dbg!(visited);
-}
 
-#[derive(Debug, PartialEq, Eq, Hash, Default, Clone, Copy)]
-struct Position {
-    x: i32,
-    y: i32,
-}
-
-impl Position {
-    fn step_positions(&self, d: &Direction) -> Vec<Position> {
-        let (step, size) = match d {
-            Direction::Right(n) => (Position { x: 1, y: 0 }, *n),
-            Direction::Left(n) => (Position { x: -1, y: 0 }, *n),
-            Direction::Up(n) => (Position { x: 0, y: 1 }, *n),
-            Direction::Down(n) => (Position { x: 0, y: -11 }, *n),
-        };
-        let mut position = vec![];
-        let mut current = *self;
-        for _ in 0..size {
-            current = current + step;
-            position.push(current);
-        }
-
-        position
-    }
-}
-
-impl Add for Position {
-    type Output = Position;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        Self {
-            x: self.x + rhs.x,
-            y: self.y + rhs.y,
-        }
-    }
-}
-impl Sub for Position {
-    type Output = Position;
-
-    fn sub(self, rhs: Self) -> Self::Output {
-        Self {
-            x: self.x - rhs.x,
-            y: self.y - rhs.y,
-        }
-    }
-}
-
-impl FromStr for Direction {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (direction, amount) = s.split_once(' ').unwrap();
-        let amount = amount.parse::<u32>().unwrap();
-        match (direction, amount) {
-            ("R", n) => Ok(Direction::Right(n)),
-            ("L", n) => Ok(Direction::Left(n)),
-            ("U", n) => Ok(Direction::Up(n)),
-            ("D", n) => Ok(Direction::Down(n)),
-            _ => Err(format!("Couldn't parse {}", s)),
-        }
-    }
-}
-#[derive(Debug, PartialEq, Eq)]
-enum Direction {
-    Right(u32),
-    Left(u32),
-    Up(u32),
-    Down(u32),
+    visited.len()
 }
 
 #[cfg(test)]
@@ -110,10 +45,16 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_parse() {
-        assert_eq!(Ok(Direction::Right(1)), "R 1".parse());
-        assert_eq!(Ok(Direction::Left(1)), "L 1".parse());
-        assert_eq!(Ok(Direction::Up(1)), "U 1".parse());
-        assert_eq!(Ok(Direction::Down(1)), "D 1".parse());
+    fn test_part1() {
+        let input = r#"R 4
+U 4
+L 3
+D 1
+R 4
+D 1
+L 5
+R 2"#;
+
+        assert_eq!(13, part1(input));
     }
 }
