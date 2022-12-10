@@ -11,14 +11,11 @@ fn part1(input: &str) -> i32 {
     circuit.run()
 }
 
-const WIDTH: usize = 40;
-const HEIGHT: usize = 6;
 struct Circuit {
     instructions: Vec<Instruction>,
     cycle: i32,
     register: i32,
     crt: Crt,
-    pixel_postion: i32,
 }
 
 impl Circuit {
@@ -28,7 +25,6 @@ impl Circuit {
             cycle: 0,
             register: 1,
             crt: Crt::new(),
-            pixel_postion: 0,
         }
     }
 
@@ -38,7 +34,6 @@ impl Circuit {
             for _ in 0..instruction.cycles() {
                 self.cycle += 1;
                 self.crt.draw(self.cycle, self.register);
-                self.pixel_postion += 1;
                 if self.cycle == 20 || (self.cycle - 20) % 40 == 0 {
                     signal_strength += self.register * self.cycle as i32
                 }
@@ -50,6 +45,8 @@ impl Circuit {
     }
 }
 
+const WIDTH: usize = 40;
+const HEIGHT: usize = 6;
 struct Crt {
     display: [char; WIDTH * HEIGHT],
 }
