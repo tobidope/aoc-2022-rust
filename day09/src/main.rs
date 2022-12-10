@@ -12,7 +12,7 @@ fn part1(input: &str) -> usize {
 }
 
 fn part2(input: &str, rope_length: usize) -> usize {
-    let mut rope = Vec::from_iter(repeat((0, 0)).take(rope_length));
+    let mut rope = vec![(0, 0); rope_length];
     let mut visited = HashSet::from([rope[0]]);
 
     for step in parse_steps(input) {
