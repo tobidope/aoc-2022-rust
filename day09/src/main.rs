@@ -4,29 +4,15 @@ const INPUT: &str = include_str!("../input.txt");
 
 fn main() {
     println!("{}", part1(INPUT));
-    println!("{}", part2(INPUT));
+    println!("{}", part2(INPUT, 10));
 }
 
 fn part1(input: &str) -> usize {
-    let mut head = (0, 0);
-    let mut tail = (0, 0);
-    let mut visited = HashSet::new();
-    visited.insert(tail);
-
-    for (x, y) in parse_steps(input) {
-        head = (head.0 + x, head.1 + y);
-
-        if let Some(new_tail) = needs_to_move(&head, &tail) {
-            tail = new_tail;
-            visited.insert(tail);
-        }
-    }
-
-    visited.len()
+    part2(input, 2)
 }
 
-fn part2(input: &str) -> usize {
-    let mut rope = Vec::from([(0, 0); 10]);
+fn part2(input: &str, rope_length: usize) -> usize {
+    let mut rope = Vec::from_iter(repeat((0, 0)).take(rope_length));
     let mut visited = HashSet::new();
     visited.insert(rope[0]);
 
@@ -87,7 +73,9 @@ L 5
 R 2"#;
 
         assert_eq!(13, part1(input));
+        assert_eq!(part2(input, 2), part1(input));
         assert_eq!(6339, part1(INPUT));
+        assert_eq!(part2(INPUT, 2), part1(INPUT));
     }
 
     #[test]
@@ -101,6 +89,6 @@ D 1
 L 5
 R 2"#;
 
-        assert_eq!(1, part2(input));
+        assert_eq!(1, part2(input, 10));
     }
 }
