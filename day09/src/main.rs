@@ -1,7 +1,4 @@
-use std::{
-    collections::{HashSet, VecDeque},
-    iter::repeat,
-};
+use std::{collections::HashSet, iter::repeat};
 
 const INPUT: &str = include_str!("../input.txt");
 
@@ -29,23 +26,20 @@ fn part1(input: &str) -> usize {
 }
 
 fn part2(input: &str) -> usize {
-    let mut head = (0, 0);
-    let mut deque = VecDeque::from([(0, 0); 10]);
+    let mut rope = Vec::from([(0, 0); 10]);
     let mut visited = HashSet::new();
-    visited.insert(head);
+    visited.insert(rope[0]);
 
     for step in parse_steps(input) {
-        head = deque.pop_front().unwrap();
-        head = (head.0 + step.0, head.1 + step.1);
-        let mut current = head;
-        for previous in deque.iter_mut() {
+        rope[0] = (rope[0].0 + step.0, rope[0].1 + step.1);
+        let mut current = rope[0];
+        for previous in &mut rope[1..] {
             if let Some(new) = needs_to_move(&current, previous) {
                 *previous = new;
             }
             current = *previous;
         }
-        deque.push_front(head);
-        visited.insert(*deque.back().unwrap());
+        visited.insert(rope[rope.len() - 1]);
     }
 
     visited.len()
