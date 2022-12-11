@@ -1,7 +1,5 @@
 use std::str::FromStr;
 
-use num::integer::lcm;
-
 const INPUT: &str = include_str!("../input.txt");
 fn main() {
     println!("{}", part1(INPUT, 3, 20));
@@ -11,13 +9,13 @@ fn main() {
 fn part1(input: &str, worry_divider: usize, rounds: usize) -> usize {
     let mut monkeys = parse_monkey(input);
     let mut inspected_items = vec![0; monkeys.len()];
-    let lcm = monkeys.iter().map(|m| m.dividend).reduce(lcm).unwrap();
+    let cm = monkeys.iter().map(|m| m.dividend).product();
 
     for _ in 0..rounds {
         for i in 0..monkeys.len() {
             let mut monkey = monkeys[i].clone();
             monkeys[i].items.clear();
-            let items = monkey.inspect_items(worry_divider, lcm);
+            let items = monkey.inspect_items(worry_divider, cm);
             inspected_items[i] += items.len();
             for (level, index) in items {
                 monkeys[index].items.push(level);
