@@ -7,38 +7,41 @@ fn main() {
 }
 
 fn part1(input: &str, worry_divider: usize, rounds: usize) -> usize {
-    let mut monkeys = parse_monkey(input);
-    let mut inspected_items = vec![0; monkeys.len()];
+    let mut monkeys = parse_monkeys(input);
     let cm = monkeys.iter().map(|m| m.dividend).product();
 
     for _ in 0..rounds {
         for i in 0..monkeys.len() {
-            let mut monkey = monkeys[i].clone();
-            monkeys[i].items.clear();
+            let monkey = &mut monkeys[i];
             let items = monkey.inspect_items(worry_divider, cm);
-            inspected_items[i] += items.len();
             for (level, index) in items {
                 monkeys[index].items.push(level);
             }
         }
     }
 
-    inspected_items.sort();
-    inspected_items.iter().rev().take(2).product()
+    monkeys.sort_by_key(|m| m.inspected_items);
+    monkeys
+        .iter()
+        .rev()
+        .take(2)
+        .map(|m| m.inspected_items)
+        .product()
 }
 
-fn parse_monkey(input: &str) -> Vec<Monkey> {
+fn parse_monkeys(input: &str) -> Vec<Monkey> {
     input
         .split("\n\n")
         .map(|m| m.parse::<Monkey>().unwrap())
         .collect()
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq)]
 struct Monkey {
     items: Vec<usize>,
     operation: Operation,
     dividend: usize,
+    inspected_items: usize,
     throw_to: (usize, usize),
 }
 
@@ -54,15 +57,17 @@ impl Monkey {
             operation,
             dividend,
             throw_to,
+            inspected_items: 0,
         }
     }
 }
 
 impl Monkey {
     fn inspect_items(&mut self, worry_divider: usize, lcm: usize) -> Vec<(usize, usize)> {
+        self.inspected_items += self.items.len();
         self.items
-            .iter()
-            .map(|&worry_level| self.operation.evaluate(worry_level))
+            .drain(..)
+            .map(|worry_level| self.operation.evaluate(worry_level))
             .map(|worry_level| (worry_level / worry_divider) % lcm)
             .map(|level| {
                 if level % self.dividend == 0 {
@@ -113,7 +118,7 @@ impl FromStr for Monkey {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq)]
 enum Operation {
     Multiply(usize),
     Add(usize),
@@ -172,6 +177,7 @@ Test: divisible by 23
                 operation: Operation::Multiply(19),
                 dividend: 23,
                 throw_to: (2, 3),
+                inspected_items: 0,
             },
             monkey
         );
@@ -184,9 +190,10 @@ Test: divisible by 23
             operation: Operation::Multiply(19),
             dividend: 23,
             throw_to: (2, 3),
+            inspected_items: 0,
         };
 
-        let result = monkey.inspect_items(3);
+        let result = monkey.inspect_items(3, 10_000);
         assert_eq!(vec![(500, 3), (620, 3)], result);
     }
 }
