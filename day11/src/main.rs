@@ -1,20 +1,23 @@
 use std::str::FromStr;
 
+use num::integer::lcm;
+
 const INPUT: &str = include_str!("../input.txt");
 fn main() {
-    println!("{}", part1(INPUT, true, 20));
-    println!("{}", part1(INPUT, false, 10_000));
+    println!("{}", part1(INPUT, 3, 20));
+    println!("{}", part1(INPUT, 1, 10_000));
 }
 
-fn part1(input: &str, divide_by_three: bool, rounds: usize) -> usize {
+fn part1(input: &str, worry_divider: usize, rounds: usize) -> usize {
     let mut monkeys = parse_monkey(input);
     let mut inspected_items = vec![0; monkeys.len()];
+    let lcm = monkeys.iter().map(|m| m.dividend).reduce(lcm).unwrap();
 
     for _ in 0..rounds {
         for i in 0..monkeys.len() {
             let mut monkey = monkeys[i].clone();
             monkeys[i].items.clear();
-            let items = monkey.inspect_items(divide_by_three);
+            let items = monkey.inspect_items(worry_divider, lcm);
             inspected_items[i] += items.len();
             for (level, index) in items {
                 monkeys[index].items.push(level);
@@ -58,17 +61,11 @@ impl Monkey {
 }
 
 impl Monkey {
-    fn inspect_items(&mut self, divide_by_three: bool) -> Vec<(usize, usize)> {
+    fn inspect_items(&mut self, worry_divider: usize, lcm: usize) -> Vec<(usize, usize)> {
         self.items
             .iter()
             .map(|&worry_level| self.operation.evaluate(worry_level))
-            .map(|worry_level| {
-                if divide_by_three {
-                    worry_level / 3
-                } else {
-                    worry_level
-                }
-            })
+            .map(|worry_level| (worry_level / worry_divider) % lcm)
             .map(|level| {
                 if level % self.dividend == 0 {
                     (level, self.throw_to.0)
@@ -191,7 +188,7 @@ Test: divisible by 23
             throw_to: (2, 3),
         };
 
-        let result = monkey.inspect_items(true);
+        let result = monkey.inspect_items(3);
         assert_eq!(vec![(500, 3), (620, 3)], result);
     }
 }
