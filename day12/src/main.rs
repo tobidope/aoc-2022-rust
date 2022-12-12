@@ -26,8 +26,7 @@ fn part1(input: &str) -> usize {
 
 fn bfs(map: &[Vec<u8>], start: &Point, end: &Point) -> usize {
     let mut queue = VecDeque::from([(*start, 0)]);
-    let mut visited = HashSet::new();
-    visited.insert((0, 0));
+    let mut visited = HashSet::from([*start]);
     while let Some((node, distance)) = queue.pop_back() {
         let height = map[node.0 as usize][node.1 as usize];
         if node == *end {
