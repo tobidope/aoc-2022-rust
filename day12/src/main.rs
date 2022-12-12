@@ -24,7 +24,7 @@ fn part1(input: &str) -> usize {
     bfs(&map.map, &map.start, &map.end)
 }
 
-fn bfs(map: &Vec<Vec<u8>>, start: &Point, end: &Point) -> usize {
+fn bfs(map: &[Vec<u8>], start: &Point, end: &Point) -> usize {
     let mut queue = VecDeque::from([(*start, 0)]);
     let mut visited = HashSet::new();
     visited.insert((0, 0));
