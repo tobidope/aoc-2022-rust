@@ -3,6 +3,7 @@ use std::cmp::Ordering;
 const INPUT: &str = include_str!("../input.txt");
 fn main() {
     println!("{}", part1(INPUT));
+    println!("{}", part2(INPUT));
 }
 
 fn part1(input: &str) -> usize {
@@ -21,6 +22,31 @@ fn part1(input: &str) -> usize {
             }
         })
         .sum()
+}
+
+fn part2(input: &str) -> usize {
+    let mut packets = input
+        .lines()
+        .filter(|l| !l.is_empty())
+        .map(Packet::from)
+        .collect::<Vec<_>>();
+    let p1 = Packet::from("[[2]]");
+    let p2 = Packet::from("[[6]]");
+    packets.push(p1.clone());
+    packets.push(p2.clone());
+    packets.sort();
+
+    packets
+        .iter()
+        .enumerate()
+        .filter_map(|(i, p)| {
+            if *p == p1 || *p == p2 {
+                Some(i + 1)
+            } else {
+                None
+            }
+        })
+        .product()
 }
 #[derive(Debug, PartialEq, Eq, Clone)]
 enum Packet {
