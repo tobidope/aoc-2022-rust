@@ -1,15 +1,13 @@
 use nom::{
     bytes::complete::tag,
-    character::complete::{digit1, multispace1},
-    combinator::{map, map_res},
+    character::complete::{self, multispace1},
+    combinator::{all_consuming, map},
     multi::separated_list1,
     sequence::separated_pair,
     IResult,
 };
 
-fn main() {
-    println!("Hello, world!");
-}
+fn main() {}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 struct Point {
@@ -18,55 +16,26 @@ struct Point {
 }
 
 fn parse(input: &str) -> IResult<&str, Vec<Vec<Point>>> {
-    separated_list1(multispace1, parse_path)(input)
-}
-
-fn parse_path(input: &str) -> IResult<&str, Vec<Point>> {
-    separated_list1(tag(" -> "), parse_point)(input)
-}
-
-fn parse_point(input: &str) -> IResult<&str, Point> {
-    let parser = separated_pair(parse_number, tag(","), parse_number);
-    map(parser, |(x, y)| Point { x, y })(input)
-}
-
-fn parse_number(input: &str) -> IResult<&str, i32> {
-    map_res(digit1, |n: &str| n.parse())(input)
+    let point = separated_pair(complete::i32, tag(","), complete::i32);
+    let point = map(point, |(x, y)| Point { x, y });
+    let path = separated_list1(tag(" -> "), point);
+    separated_list1(multispace1, path)(input)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use indoc::indoc;
 
     #[test]
-    fn test_parse_number() {
-        assert_eq!(Ok((",1", 2)), parse_number("2,1"));
+    fn test_parse() {
+        let input = indoc! {"
+            498,4 -> 498,6 -> 496,6
+            503,4 -> 502,4 -> 502,9 -> 494,9
+        "};
+
+        let (_, result) = parse(input).unwrap();
+        assert_eq!(2, result.len());
+        assert_eq!(Point { x: 498, y: 4 }, result[0][0]);
     }
-
-    #[test]
-    fn test_parse_point() {
-        let result = parse_point("2,1 ->");
-        assert_eq!(Ok((" ->", Point { x: 2, y: 1 })), result);
-    }
-
-    #[test]
-    fn test_parse_path() {
-        let path = "503,4 -> 502,4 -> 502,9 -> 494,9";
-        let path = parse_path(path);
-        assert_eq!(
-            Ok((
-                "",
-                vec![
-                    Point { x: 503, y: 4 },
-                    Point { x: 502, y: 4 },
-                    Point { x: 502, y: 9 },
-                    Point { x: 494, y: 9 }
-                ]
-            )),
-            path
-        );
-    }
-
-    #[test]
-    fn test_parse() {}
 }
