@@ -35,7 +35,7 @@ impl Circuit {
                 self.cycle += 1;
                 self.crt.draw(self.cycle, self.register);
                 if self.cycle == 20 || (self.cycle - 20) % 40 == 0 {
-                    signal_strength += self.register * self.cycle as i32
+                    signal_strength += self.register * self.cycle
                 }
             }
             self.register = instruction.change_register(&self.register)

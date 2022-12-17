@@ -17,7 +17,7 @@ fn part1(input: &str) -> usize {
         .bytes()
         .find(|&c| rucksack2.contains(c as char))
         .map(|c| priority(&c))
-        .unwrap() as usize
+        .unwrap()
 }
 
 fn part2(input: &str) -> usize {
