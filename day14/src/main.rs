@@ -1,5 +1,5 @@
 use itertools::Itertools;
-use std::collections::BTreeSet;
+use std::collections::HashSet;
 
 use nom::{
     bytes::complete::tag,
@@ -77,8 +77,8 @@ fn part2(input: &str) -> usize {
     grid.len() - count_elements
 }
 
-fn create_grid(pathes: &Vec<Vec<Point>>) -> BTreeSet<Point> {
-    let mut set = BTreeSet::new();
+fn create_grid(pathes: &Vec<Vec<Point>>) -> HashSet<Point> {
+    let mut set = HashSet::new();
     for path in pathes {
         for (first, second) in path.iter().tuple_windows() {
             set.extend(first.path_between(second));
