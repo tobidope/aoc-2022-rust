@@ -28,21 +28,25 @@ fn part1(input: &str, row: i32) -> usize {
 struct Sensor {
     position: (i32, i32),
     beacon: (i32, i32),
+    distance: i32,
 }
 
 impl Sensor {
-    fn distance_to_beacon(&self) -> i32 {
-        (self.position.0 - self.beacon.0).abs() + (self.position.1 - self.beacon.1).abs()
+    fn new(position: (i32, i32), beacon: (i32, i32)) -> Self {
+        Self {
+            position,
+            beacon,
+            distance: (position.0 - beacon.0).abs() + (position.1 - beacon.1).abs(),
+        }
     }
 
     fn no_beacons(&self, row: i32) -> Box<dyn Iterator<Item = (i32, i32)> + '_> {
-        let beacon_distance = self.distance_to_beacon();
         let distance = (self.position.1 - row).abs();
-        if distance > beacon_distance {
+        if distance > self.distance {
             Box::new(empty::<(i32, i32)>())
         } else {
-            let left = self.position.0 - (beacon_distance - distance);
-            let right = self.position.0 + (beacon_distance - distance);
+            let left = self.position.0 - (self.distance - distance);
+            let right = self.position.0 + (self.distance - distance);
             Box::new(
                 (left..=right)
                     .zip(repeat(row))
@@ -59,7 +63,7 @@ fn parse_sensor(input: &str) -> IResult<&str, Sensor> {
             tag(": closest beacon is at "),
             parse_coordinate,
         ),
-        |(position, beacon)| Sensor { position, beacon },
+        |(position, beacon)| Sensor::new(position, beacon),
     )(input)
 }
 
@@ -81,13 +85,7 @@ mod tests {
     fn test_parse_sensor() {
         let (_, sensor) =
             parse_sensor("Sensor at x=2, y=18: closest beacon is at x=-2, y=15").unwrap();
-        assert_eq!(
-            Sensor {
-                position: (2, 18),
-                beacon: (-2, 15)
-            },
-            sensor
-        )
+        assert_eq!(Sensor::new((2, 18), (-2, 15)), sensor)
     }
 
     #[test]
