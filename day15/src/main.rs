@@ -1,7 +1,4 @@
-use std::{
-    collections::HashSet,
-    iter::{empty, repeat},
-};
+use std::collections::BinaryHeap;
 
 use nom::{
     bytes::complete::tag,
@@ -15,13 +12,28 @@ const INPUT: &str = include_str!("../input.txt");
 fn main() {
     println!("{}", part1(INPUT, 2000000))
 }
-fn part1(input: &str, row: i32) -> usize {
-    let sensors = input
+fn part1(input: &str, row: i32) -> i32 {
+    let ranges = input
         .lines()
-        .map(|l| parse_sensor(l).unwrap().1)
-        .collect::<Vec<_>>();
-    let no_beacons: HashSet<(i32, i32)> = sensors.iter().flat_map(|s| s.no_beacons(row)).collect();
-    no_beacons.len()
+        .map(parse_sensor)
+        .flat_map(|s| s.no_beacons(row))
+        .collect::<BinaryHeap<_>>()
+        .into_sorted_vec();
+    ranges[1..]
+        .iter()
+        .fold(vec![ranges[0]], |mut acc, &current| {
+            let previous = acc.last_mut().unwrap();
+            if previous.1 < current.0 {
+                acc.push(current);
+            } else {
+                *previous = (previous.0.min(current.0), previous.1.max(current.1));
+            }
+            acc
+        })
+        .iter()
+        .map(|&(l, r)| r - l + 1)
+        .sum::<i32>()
+        - 1
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -40,31 +52,30 @@ impl Sensor {
         }
     }
 
-    fn no_beacons(&self, row: i32) -> Box<dyn Iterator<Item = (i32, i32)> + '_> {
+    fn no_beacons(&self, row: i32) -> Option<(i32, i32)> {
         let distance = (self.position.1 - row).abs();
         if distance > self.distance {
-            Box::new(empty::<(i32, i32)>())
+            None
         } else {
             let left = self.position.0 - (self.distance - distance);
             let right = self.position.0 + (self.distance - distance);
-            Box::new(
-                (left..=right)
-                    .zip(repeat(row))
-                    .filter(|&p| p != self.beacon),
-            )
+            Some((left, right))
         }
     }
 }
 
-fn parse_sensor(input: &str) -> IResult<&str, Sensor> {
-    map(
+fn parse_sensor(input: &str) -> Sensor {
+    let Ok((_, result)) = map(
         separated_pair(
             preceded(tag("Sensor at "), parse_coordinate),
             tag(": closest beacon is at "),
             parse_coordinate,
         ),
         |(position, beacon)| Sensor::new(position, beacon),
-    )(input)
+    )(input) else {
+        panic!("Couldn't parse sensor: {input}")
+    };
+    result
 }
 
 fn parse_coordinate(input: &str) -> IResult<&str, (i32, i32)> {
@@ -83,8 +94,7 @@ mod tests {
 
     #[test]
     fn test_parse_sensor() {
-        let (_, sensor) =
-            parse_sensor("Sensor at x=2, y=18: closest beacon is at x=-2, y=15").unwrap();
+        let sensor = parse_sensor("Sensor at x=2, y=18: closest beacon is at x=-2, y=15");
         assert_eq!(Sensor::new((2, 18), (-2, 15)), sensor)
     }
 
