@@ -64,6 +64,10 @@ impl Sensor {
     }
 }
 
+fn tuning_distance(point: &(i32, i32)) -> i32 {
+    point.0 * 4000000 + point.1
+}
+
 fn parse_sensor(input: &str) -> Sensor {
     let Ok((_, result)) = map(
         separated_pair(
